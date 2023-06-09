@@ -1,0 +1,6 @@
+image-repo-name: v71n57
+image-name: gohelloapp
+registry-username: v71n57
+registry-password: cGwaG8s3mdhLLK9E
+git-repo-uri: https://github.com/v71n57/gohello.git
+tag-app: latest

@@ -1,0 +1,71 @@
+resources:
+- name: gohello-git
+  type: git
+  icon: github
+  source:
+    uri: ((git-repo-uri))
+    branch: main
+
+- name: ((image-name))
+  type: registry-image
+  icon: docker
+  source:
+    # You need to provide these variables when
+    # setting the pipeline
+    repository: ((image-repo-name))/((image-name))
+    username: ((registry-username))
+    password: ((registry-password))
+    tag: ((tag-app))
+
+jobs:
+- name: build-and-publish-((image-name))
+  public: true
+  plan:
+  - get: gohello-git
+    trigger: true
+  - task: build-task-image
+    privileged: true
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          # Check out the README for oci-build-task at
+          # https://github.com/concourse/oci-build-task
+          repository: concourse/oci-build-task
+      inputs:
+      - name: gohello-git
+      outputs:
+      - name: image
+      params:
+        CONTEXT: gohello-git/
+        # UNPACK_ROOTFS: "true" # only needed if using image in a future step
+      run:
+        path: build
+  - put: ((image-name))
+    params:
+      image: image/image.tar
+      # tag: latest
+
+# jobs:
+# - name: job
+#   public: true
+#   plan:
+#   - get: gohello-git
+#     trigger: true
+#   - task: list-files
+#     config:
+#       inputs:
+#         - name: gohello-git
+#       platform: linux
+#       image_resource:
+#         type: registry-image
+#         source: { repository: busybox }
+#       run:
+#         path: /bin/ash
+#         args:
+#           - "-e"
+#           - "-c"
+#           - |
+#             echo "current date is: $(date '+%Y-%m-%d %H:%M:S')"
+#             ls -l ./gohello-git
