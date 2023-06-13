@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gohelloapp
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: gohelloapp
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/name: gohelloapp
+        k8s-app: gohelloapp
+    spec:
+      containers:
+        - name: gohello
+          image: >-
+            harbor.test.harbor.local/library/gohelloapp:latest
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 5
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/os: linux
+      automountServiceAccountToken: true
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

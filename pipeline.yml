@@ -10,12 +10,12 @@ resources:
   type: registry-image
   icon: docker
   source:
-    # You need to provide these variables when
-    # setting the pipeline
-    repository: ((image-repo-name))/((image-name))
+    ca_certs: ((certs))
+    repository: ((image-repo-name))/library/((image-name))
     username: ((registry-username))
     password: ((registry-password))
     tag: ((tag-app))
+    insecure: true
 
 jobs:
 - name: build-and-publish-((image-name))
@@ -32,7 +32,10 @@ jobs:
         source:
           # Check out the README for oci-build-task at
           # https://github.com/concourse/oci-build-task
+          ca_certs: ((certs))
           repository: concourse/oci-build-task
+          # repository: ((image-repo-name))/library/concourse/oci-build-task
+          insecure: true
       inputs:
       - name: gohello-git
       outputs:
@@ -47,6 +50,20 @@ jobs:
       image: image/image.tar
       # tag: latest
 
+  - task: kubedeploy
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source: { repository: bitnami/kubectl }
+      run:
+        path: /bin/sh
+        args:
+          - "-e"
+          - "-c"
+          - |
+            echo "current date is: $(date '+%Y-%m-%d %H:%M:S')"
+            pwd ; id ; ls -l ./
 # jobs:
 # - name: job
 #   public: true
@@ -69,3 +86,6 @@ jobs:
 #           - |
 #             echo "current date is: $(date '+%Y-%m-%d %H:%M:S')"
 #             ls -l ./gohello-git
+
+
+
