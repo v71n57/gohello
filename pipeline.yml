@@ -33,8 +33,8 @@ jobs:
           # Check out the README for oci-build-task at
           # https://github.com/concourse/oci-build-task
           ca_certs: ((certs))
-          repository: concourse/oci-build-task
-          # repository: ((image-repo-name))/library/concourse/oci-build-task
+          # repository: concourse/oci-build-task
+          repository: ((image-repo-name))/library/concourse/oci-build-task
           insecure: true
       inputs:
       - name: gohello-git
@@ -50,12 +50,21 @@ jobs:
       image: image/image.tar
       # tag: latest
 
-  - task: kubedeploy
+  - task: deploy-kube-app
     config:
+      inputs:
+        - name: gohello-git
       platform: linux
       image_resource:
         type: registry-image
-        source: { repository: bitnami/kubectl }
+        # source: { repository: bitnami/kubectl }
+        source:
+          # Check out the README for oci-build-task at
+          # https://github.com/concourse/oci-build-task
+          ca_certs: ((certs))
+          repository: harbor.test.harbor.local/library/kubectl
+          # repository: ((image-repo-name))/library/concourse/oci-build-task
+          insecure: true
       run:
         path: /bin/sh
         args:
@@ -63,7 +72,9 @@ jobs:
           - "-c"
           - |
             echo "current date is: $(date '+%Y-%m-%d %H:%M:S')"
-            pwd ; id ; ls -l ./
+            ls -l ./
+            echo ((kube)) | base64 -d > config ; pwd
+            kubectl --kubeconfig config apply -f gohello-git/dpl.yaml 
 # jobs:
 # - name: job
 #   public: true
