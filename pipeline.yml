@@ -73,6 +73,7 @@ jobs:
           - |
             echo "current date is: $(date '+%Y-%m-%d %H:%M:S')"
             ls -l ./
+            pwd ; echo $HOME
             echo ((kube)) | base64 -d > config ; pwd
             kubectl --kubeconfig config apply -f gohello-git/dpl.yaml 
 # jobs:

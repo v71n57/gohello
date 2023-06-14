@@ -1,10 +1,10 @@
+IMG=gohelloapp
+
 all: build run
 
 build: Dockerfile
-	docker build -t gohelloapp -f Dockerfile .
+	docker build -t $(IMG) -f Dockerfile .
 
 run: build
-	docker run -it -p 8080:80 gohelloapp 
+	docker run -it -p 8080:80 $(IMG) 
 
-# clean:
-# 	rm -rf *.o hello
