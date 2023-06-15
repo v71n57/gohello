@@ -1,0 +1,9 @@
+replicaCount: 1
+terminationGracePeriodSeconds: 3
+ingress:
+  enabled: true
+  hosts:
+    - host: gohelloapp.web
+      paths:
+        - path: /
+          pathType: Prefix

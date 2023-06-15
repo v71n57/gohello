@@ -18,7 +18,7 @@ resources:
     insecure: true
 
 jobs:
-- name: build-and-publish-((image-name))
+- name: build-and-publish-gohello
   public: true
   plan:
   - get: gohello-git
@@ -50,6 +50,12 @@ jobs:
       image: image/image.tar
       # tag: latest
 
+# - name: deploy-kube-gohello-app
+#   public: true
+#   plan:
+#   - get: every-30s
+#     passed: [build-and-publish-gohello]
+#     trigger: true
   - task: deploy-kube-app
     config:
       inputs:
@@ -72,11 +78,38 @@ jobs:
           - "-c"
           - |
             echo "current date is: $(date '+%Y-%m-%d %H:%M:S')"
-            ls -l ./
-            pwd ; echo $HOME
+            ls -la ./
             mkdir -p ~/.kube
-            echo ((kube)) | base64 -d > ~/.kube/config
-            kubectl --kubeconfig config apply -f gohello-git/dpl.yaml 
+            echo ((kube)) | base64 -di > ~/.kube/config
+            helm upgrade --create-namespace --install gohelloapp gohelloapp --namespace gohelloapp -f gohello-git/values.yaml --set replicaCount=((replicaCount)) --dry-run
+            helm upgrade --create-namespace --install gohelloapp gohelloapp --namespace gohelloapp -f gohello-git/values.yaml --set replicaCount=((replicaCount))
+
+  # - task: deploy-kube-app
+  #   config:
+  #     inputs:
+  #       - name: gohello-git
+  #     platform: linux
+  #     image_resource:
+  #       type: registry-image
+  #       # source: { repository: bitnami/kubectl }
+  #       source:
+  #         # Check out the README for oci-build-task at
+  #         # https://github.com/concourse/oci-build-task
+  #         ca_certs: ((certs))
+  #         repository: harbor.test.harbor.local/library/kubectl
+  #         # repository: ((image-repo-name))/library/concourse/oci-build-task
+  #         insecure: true
+  #     run:
+  #       path: /bin/sh
+  #       args:
+  #         - "-e"
+  #         - "-c"
+  #         - |
+  #           echo "current date is: $(date '+%Y-%m-%d %H:%M:S')"
+  #           ls -la ./
+  #           mkdir -p ~/.kube
+  #           echo ((kube)) | base64 -di > ~/.kube/config
+  #           kubectl apply -f gohello-git/deploy.yaml 
 # jobs:
 # - name: job
 #   public: true
