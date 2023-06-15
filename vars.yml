@@ -4,7 +4,7 @@ registry-username: admin
 registry-password: admin12345
 git-repo-uri: https://github.com/v71n57/gohello.git
 tag-app: latest
-replicaCount: 3
+rplcount: "3"
 certs:
 - |
   -----BEGIN CERTIFICATE-----
