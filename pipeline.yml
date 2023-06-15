@@ -68,7 +68,7 @@ jobs:
           # Check out the README for oci-build-task at
           # https://github.com/concourse/oci-build-task
           ca_certs: ((certs))
-          repository: harbor.test.harbor.local/library/kubectl
+          repository: harbor.test.harbor.local/library/helm
           # repository: ((image-repo-name))/library/concourse/oci-build-task
           insecure: true
       run:
