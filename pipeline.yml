@@ -20,7 +20,7 @@ resources:
 jobs:
 - name: build-and-publish
   public: true
-  serial: true
+  # serial: true
   plan:
   - get: gohello-git
     trigger: true
@@ -84,7 +84,7 @@ jobs:
   plan:
   - get: gohello-git
     passed: [unit-test]
-    trigger: true
+    trigger: false
   - task: helm-deploy-kube-app
     config:
       inputs:
