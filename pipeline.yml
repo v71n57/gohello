@@ -18,7 +18,7 @@ resources:
     insecure: true
 
 jobs:
-- name: build-and-publish
+- name: build-push
   public: true
   # serial: true
   plan:
@@ -49,11 +49,11 @@ jobs:
     params:
       image: image/image.tar
 
-- name: unit-test
+- name: unit
   public: true
   plan:
   - get: gohello-git
-    passed: [build-and-publish]
+    passed: [build-push]
     trigger: true
   - task: run-unit-test
     config:
@@ -83,7 +83,7 @@ jobs:
   public: true
   plan:
   - get: gohello-git
-    passed: [unit-test]
+    passed: [unit]
     trigger: false
   - task: helm-deploy-kube-app
     config:
