@@ -54,7 +54,7 @@ jobs:
   plan:
   - get: gohello-git
     passed: [build-and-publish]
-    trigger: true
+    trigger: false
   - task: run-unit-test
     config:
       inputs:
@@ -84,7 +84,7 @@ jobs:
   plan:
   - get: gohello-git
     passed: [unit-test]
-    trigger: true
+    trigger: false
   - task: helm-deploy-kube-app
     config:
       inputs:
