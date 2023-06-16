@@ -2,14 +2,16 @@
 ARG GO_VERSION=1.19.8
 ARG ALP_VERSION=3.17
 
-FROM golang:${GO_VERSION}-alpine${ALP_VERSION} AS builder
+FROM harbor.test.harbor.local/library/golang:${GO_VERSION}-alpine${ALP_VERSION} AS builder
+#FROM golang:${GO_VERSION}-alpine${ALP_VERSION} AS builder
 WORKDIR /go/src/app
 COPY . .
 RUN apk add --no-cache git
 RUN go build -o /go/bin/app ./main.go
 
 #final stage
-FROM alpine:${ALP_VERSION}
+FROM harbor.test.harbor.local/library/alpine:${ALP_VERSION}
+#FROM alpine:${ALP_VERSION}
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
 COPY --from=builder /go/bin/app /app

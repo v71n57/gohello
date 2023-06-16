@@ -81,8 +81,8 @@ jobs:
             ls -la ./
             mkdir -p ~/.kube
             echo ((kube)) | base64 -di > ~/.kube/config
-            helm upgrade --create-namespace --install gohelloapp gohelloapp --namespace gohelloapp -f gohello-git/values.yaml --set replicaCount=((rplcount)) --dry-run
-            helm upgrade --create-namespace --install gohelloapp gohelloapp --namespace gohelloapp -f gohello-git/values.yaml --set replicaCount=((rplcount))
+            helm upgrade --create-namespace --install ((image-name)) gohello-git/gohelloapp --namespace ((image-name)) -f gohello-git/values.yaml --set replicaCount=((rplcount)) --dry-run
+            helm upgrade --create-namespace --install ((image-name)) gohello-git/gohelloapp  --namespace ((image-name)) -f gohello-git/values.yaml --set replicaCount=((rplcount))
 
   # - task: deploy-kube-app
   #   config:
