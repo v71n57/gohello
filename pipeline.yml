@@ -49,13 +49,43 @@ jobs:
     params:
       image: image/image.tar
 
-- name: deploy-gohelloapp
+- name: unit-test
   public: true
   plan:
   - get: gohello-git
     passed: [build-and-publish]
     trigger: true
-  - task: deploy-kube-app
+  - task: run-unit-test
+    config:
+      inputs:
+        - name: gohello-git
+      platform: linux
+      image_resource:
+        type: registry-image
+        # source: { repository: bitnami/kubectl }
+        source:
+          # Check out the README for oci-build-task at
+          # https://github.com/concourse/oci-build-task
+          ca_certs: ((certs))
+          repository: harbor.test.harbor.local/library/helm
+          # repository: ((image-repo-name))/library/concourse/oci-build-task
+          insecure: true
+      run:
+        path: /bin/sh
+        args:
+          - "-e"
+          - "-c"
+          - |
+            echo "Run fake unit test (sleep 15s) : $(date '+%Y-%m-%d %H:%M:S')"
+            sleep 15s
+
+- name: deploy-gohelloapp
+  public: true
+  plan:
+  - get: gohello-git
+    passed: [unit-test]
+    trigger: true
+  - task: helm-deploy-kube-app
     config:
       inputs:
         - name: gohello-git
